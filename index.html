@@ -1,0 +1,248 @@
+<html>
+    <head>
+        <title>test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body{
+                vertical-align: middle;
+                text-align: center;
+            }
+            #barWrapper{
+                display: inline-block;
+                vertical-align: middle;
+            }
+            #correctBar{
+                background-color: greenyellow;
+            }
+            /*
+            #wrongBar{
+                background-color: red;
+            }
+            */
+            #bar{
+                width:500px;
+                height: 20px;
+                display: inline-block;
+                vertical-align: middle;
+                background-color: red;
+            }
+            .bars{
+                width:50%;
+                float: left;
+                height: inherit;
+                display: inline-block;
+            }
+            #correct{
+                
+            }
+            #wrong{
+                
+            }
+            .counter{
+                display: inline-block;
+                vertical-align: middle;
+                font-size: 300%;
+                position: relative;
+            }
+            .center{
+                margin: auto;
+                text-align: center;
+            }
+            #word{
+                margin-top: 15%;
+                font-size:1000%;
+                -ms-user-select: none;
+                -moz-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+            }
+            .vowel:hover:after{
+                content:"́";
+            }
+            #percentWrapper{
+                font-size: 400%;
+            }
+            #content{
+                display: none;
+                position:relative;
+                bottom:100%;
+                
+            }
+            #start{
+                -ms-user-select: none;
+                -moz-user-select: none;
+                -khtml-user-select: none;
+                -webkit-user-select: none;
+                font-size: 500%;
+                display: inline-block;
+                
+                border:3px solid black;
+                border-radius: 10px;
+                background-color: lightgrey;
+                vertical-align: middle;
+                height: 100px;
+                width: 250px;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                margin-top: -50px;
+                margin-left: -125px;
+            }
+            #start:hover{
+                background-color: grey;
+                cursor:pointer;
+            }
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+            //слова
+            var words = [
+                
+                ['сливовый', 2],
+                ['форзац', 1],
+                ['исстари', 0],
+                ['принудить',4],
+                ['щемит',3],
+                ['нанятый',3],
+                ['угри',3],
+                ['хвоя',2],
+                ['мастерски',8],
+                ['мизерный',3],
+                ['ломоть',3],
+                ['зубчатый',4],
+                ['диспансер',7],
+                ['апостроф',6],
+                ['иконопись',0],
+                ['черпать',1],
+                ['знамение',2],
+                ['кремень',4],
+                ['генезис',1],
+                ['издревле',4],
+                ['блага',2],
+                ['ведерный',1],
+                ['включит',5],
+                ['еретик',4],
+                ['избалованный',5],
+                ['избаловать',7],
+                ['нормировать',8],
+                ['примкнутый',2],
+                ['разновременый',9],
+                ['своевременный',6],
+                ['сосредоточение',8],
+                ['танцовщица',4],
+                ['ходатайствовать',3],
+                ['щавель',3],
+                ['кулинария',7]
+            ];
+            var nextWord = 0;
+            var correctPos;
+            var vowels = "уеёыаоэяию".split('');
+            var correct = 0;
+            var wrong = 0;
+            var wait = false;
+        </script>
+        <script>
+            function refreshWord(){
+                if(nextWord > words.length-1){
+                    end();
+                    return;
+                }
+                let word = words[nextWord][0];
+                correctPos = words[nextWord][1];
+                nextWord++;
+                let wordWrapper = $("#word").empty();
+                word = word.split('');
+                for(let i in word){
+                    let letter = word[i];
+                    let isVowel = false;
+                    for(let j in vowels){
+                        if(letter === vowels[j]){
+                            isVowel=true;
+                            break;
+                        }
+                    }
+                    let span = $("<span class='letter'>"+word[i]+"<span>");
+                    if(isVowel)span.addClass('vowel');
+                    wordWrapper.append(span);
+                }
+                $('.vowel').on("click", check);
+            }
+            function check(){
+                if(wait)return;
+                    
+                    let pos = $(this).index();
+                    if(pos === correctPos){
+                        correct++;
+                    }
+                    else {
+                        wrong++;
+                    }
+                    $("#correct").text(correct);
+                    $("#wrong").text(wrong);
+                    let correctBarWidth = Math.floor(100*correct/(wrong+correct));
+ 
+                    $("#correctBar").animate({
+                        "width" : correctBarWidth+"%"
+                    },"slow");
+                    $("#percent").text(correctBarWidth);
+
+                    $("#word").children().eq(pos).css("color", "red");
+                    $("#word").children().eq(correctPos).css("color", "greenyellow");
+                    
+                    wait = true;
+                    setTimeout(function(){
+                        refreshWord();
+                        wait = false;
+                    }, 2500);
+            }
+            function end(){
+                $("#word span").hide("slow");
+                
+                $("#correct").animate({
+                    left:"100px",
+                    fontSize: "500%"
+                }, "slow");
+                $("#wrong").animate({
+                    right:"100px",
+                    fontSize: "500%"
+                }, "slow");
+                
+                $("#bar").animate({
+                    height:"100px"
+                }, "slow");
+                
+                $("#percentWrapper").animate({
+                    fontSize: "800%"
+                },"slow");
+
+            }
+            $().ready(function(){
+                refreshWord();
+                $("#start").on("click", function(){
+                    $("#start").hide();
+                    $("#content").show().animate({
+                        bottom:"0%"
+                    });
+                    
+                });
+            });
+        </script>
+    </head>
+    <body class="center">
+        <div id="content">
+            <div id="word"></div>
+            <div id="barWrapper">
+                <div id="correct" class="counter">0</div>
+                <div id="bar">
+                    <div id="correctBar" class="bars"></div>
+                </div>
+                <div id="wrong" class="counter">0</div>
+                <div id="percentWrapper"><span id="percent">0</span>%</div>
+            </div>
+        </div>
+        <div id="start">
+            Начать
+        </div>
+    </body>
+</html>
